@@ -5,7 +5,6 @@ import torch.nn.functional as F
 from .utils import get_named_beta_schedule
 
 
-# 扩散过程类
 class GaussianDiffusion:
     def __init__(
         self,
@@ -28,11 +27,10 @@ class GaussianDiffusion:
         self.alphas = 1.0 - self.betas
         self.alpha_bars = torch.cumprod(self.alphas, dim=0)
 
-        # 预计算扩散参数
         self.sqrt_alpha_bars = torch.sqrt(self.alpha_bars)
         self.sqrt_one_minus_alpha_bars = torch.sqrt(1.0 - self.alpha_bars)
 
-        self.register_buffer = lambda name, val: None  # 兼容性占位
+        self.register_buffer = lambda name, val: None  
 
     def q_sample(self, x_0, t, noise=None):
         if noise is None:
@@ -56,7 +54,6 @@ class GaussianDiffusion:
         )
         sqrt_recip_alpha_t = torch.sqrt(1.0 / (1 - betas_t))
 
-        # 预测噪声并计算均值
         predicted_noise = self.model(x, t)
         model_mean = sqrt_recip_alpha_t * (
             x - betas_t * predicted_noise / sqrt_one_minus_alpha_bar_t
