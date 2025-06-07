@@ -63,66 +63,66 @@ class MLP(nn.Module):
         return x
 
 
-class TabDDPM1(nn.Module):
-    def __init__(self, data_dim, hidden_dim=256, time_emb_dim=128):
-        super().__init__()
-        self.time_emb_dim = time_emb_dim
-
-        self.time_embed = nn.Sequential(
-            nn.Linear(time_emb_dim, time_emb_dim),
-            nn.LeakyReLU(),
-            nn.Linear(time_emb_dim, time_emb_dim),
-        )
-
-        self.model = nn.Sequential(
-            nn.Linear(data_dim + time_emb_dim, hidden_dim),
-            nn.LeakyReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.LeakyReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.LeakyReLU(),
-            nn.Linear(hidden_dim, data_dim),
-        )
-
-
-    def forward(self, x, t):
-        t_emb = get_timestep_embedding(t, self.time_emb_dim)
-        t_emb = self.time_embed(t_emb)
-        x = torch.cat([x, t_emb], dim=1)
-        return self.model(x)
-
-
 class TabDDPM(nn.Module):
     def __init__(self, data_dim, hidden_dim=256, time_emb_dim=128):
         super().__init__()
         self.time_emb_dim = time_emb_dim
-        
-        self.attn = nn.MultiheadAttention(data_dim + time_emb_dim, num_heads=1)
-        
+
         self.time_embed = nn.Sequential(
             nn.Linear(time_emb_dim, time_emb_dim),
-            nn.SiLU(),
+            nn.LeakyReLU(),
             nn.Linear(time_emb_dim, time_emb_dim),
         )
 
         self.model = nn.Sequential(
             nn.Linear(data_dim + time_emb_dim, hidden_dim),
-            nn.SiLU(),
+            nn.LeakyReLU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.SiLU(),
+            nn.LeakyReLU(),
             nn.Linear(hidden_dim, hidden_dim),
-            nn.SiLU(),
+            nn.LeakyReLU(),
             nn.Linear(hidden_dim, data_dim),
         )
-        self.norm1 = nn.LayerNorm(data_dim + time_emb_dim)
+
 
     def forward(self, x, t):
         t_emb = get_timestep_embedding(t, self.time_emb_dim)
         t_emb = self.time_embed(t_emb)
         x = torch.cat([x, t_emb], dim=1)
-        
-        attn_out, _ = self.attn(x, x, x)
-        
-        x = self.norm1(x + attn_out)
-        
         return self.model(x)
+
+
+# class TabDDPM(nn.Module):
+#     def __init__(self, data_dim, hidden_dim=256, time_emb_dim=128):
+#         super().__init__()
+#         self.time_emb_dim = time_emb_dim
+        
+#         self.attn = nn.MultiheadAttention(data_dim + time_emb_dim, num_heads=1)
+        
+#         self.time_embed = nn.Sequential(
+#             nn.Linear(time_emb_dim, time_emb_dim),
+#             nn.SiLU(),
+#             nn.Linear(time_emb_dim, time_emb_dim),
+#         )
+
+#         self.model = nn.Sequential(
+#             nn.Linear(data_dim + time_emb_dim, hidden_dim),
+#             nn.SiLU(),
+#             nn.Linear(hidden_dim, hidden_dim),
+#             nn.SiLU(),
+#             nn.Linear(hidden_dim, hidden_dim),
+#             nn.SiLU(),
+#             nn.Linear(hidden_dim, data_dim),
+#         )
+#         self.norm1 = nn.LayerNorm(data_dim + time_emb_dim)
+
+#     def forward(self, x, t):
+#         t_emb = get_timestep_embedding(t, self.time_emb_dim)
+#         t_emb = self.time_embed(t_emb)
+#         x = torch.cat([x, t_emb], dim=1)
+        
+#         attn_out, _ = self.attn(x, x, x)
+        
+#         x = self.norm1(x + attn_out)
+        
+#         return self.model(x)
