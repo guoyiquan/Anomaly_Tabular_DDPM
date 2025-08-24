@@ -1,4 +1,4 @@
-This is the anonymous code for WSDM paper review
+# This is the anonymous code for WSDM paper review
  
 | \textbf{Datasets}         | \textbf{iForest} | \textbf{LOF}      | \textbf{OCSVM}  | \textbf{ECOD} | \textbf{DeepSVDD} | \textbf{DIF} | \textbf{ALAD} | \textbf{LUNAR}  | \textbf{ICL}     | \textbf{GOAD}   | \textbf{NeuTraL} | \textbf{MCM}    | \textbf{OURS}    |
 |---------------------------|------------------|-------------------|-----------------|---------------|-------------------|--------------|---------------|-----------------|------------------|-----------------|------------------|-----------------|------------------|
